@@ -72,7 +72,7 @@
     "rank": 5,
     "class_id": 829,
     "class_name": "streetcar",
-    "score": 0.048194
+    "score": 0.048193
   },
   {
     "sample_id": "kitchen",
@@ -87,7 +87,7 @@
     "rank": 1,
     "class_id": 577,
     "class_name": "gong",
-    "score": 0.420191
+    "score": 0.420192
   },
   {
     "sample_id": "kitchen",
@@ -132,7 +132,7 @@
     "rank": 4,
     "class_id": 634,
     "class_name": "lumbermill",
-    "score": 0.046928
+    "score": 0.046927
   },
   {
     "sample_id": "kitchen",
@@ -177,7 +177,7 @@
     "rank": 2,
     "class_id": 532,
     "class_name": "dining_table",
-    "score": 0.043936
+    "score": 0.043935
   },
   {
     "sample_id": "dining",
