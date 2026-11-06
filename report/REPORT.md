@@ -2,7 +2,7 @@
 
 **Ngày chạy:** 6/11/2026
 
-**Runtime Colab:** CPU
+**Runtime Colab:** GPU
 
 **Python / PyTorch / Ultralytics:**3.x / 2.x / 8.4.145
 
@@ -46,11 +46,11 @@ Chỉ dùng ảnh `sample_id = kitchen`. Chọn **một** record.
 Số lượng prediction theo ngưỡng: xem output ô so sánh `0.20` / `0.35` / `0.60` trong notebook.
 
 1. Chép một record: `class_name` = bowl ; `score`= 0.701282 ; `bbox_xyxy`=[155.02,168.67,182.38,184.18] ; `bbox_width`=27.36 ; `bbox_height`= 15.51
-2. Lớp bowl, score = 0.701282; box từ trên-trái khoảng pixel(155.02,168.67) đến góc dưới phải(182.38,184.18); rộng khoảng 27 px; cao khoảng 16 px.
-3. Ví dụ so hai ngưỡng trên ảnh kitchen: threshold 0.20 → nhiều prediction hơn (vd. 18); threshold 0.60 → ít hơn (vd. 7). 
+2. Lớp `bowl`, score = 0.701282; box từ trên-trái khoảng pixel(155.02,168.67) đến góc dưới phải(182.38,184.18); rộng khoảng 27 px; cao khoảng 16 px.
+3. Ví dụ so hai ngưỡng trên ảnh `kitchen`: threshold 0.20 → nhiều prediction hơn (vd. 18); threshold 0.60 → ít hơn (vd. 7). 
 4. Reviewer phải xem thêm nhiều hộp hơn, kể cả hộp nhiễu/score thấp, nên khối lượng kiểm tra tăng.
 5. Quy tắc box: Box phải ôm sát vật thể, không cắt mất phần nhìn thấy của object; không vẽ một box chung cho hai object tách rời.
-6. Trên ảnh kitchen, vật bị cắt mép bàn/đồ dùng gần biên ảnh: tôi chọn guideline nếu rule đã có (ví dụ “còn ≥ 50% object trong khung thì vẫn gán”); nếu không chắc object là gì vì che khuất nặng thì escalation hỏi Lab Coach, không tự bịa lớp.
+6. Trên ảnh `kitchen`, vật bị cắt mép bàn/đồ dùng gần biên ảnh: Chọn `guideline` nếu rule đã có (ví dụ “còn ≥ 50% object trong khung thì vẫn gán”); nếu không chắc object là gì vì che khuất nặng thì escalation hỏi Lab Coach, không tự bịa lớp.
 
 ## 3. Phân đoạn theo từng đối tượng
 
@@ -58,12 +58,16 @@ Số lượng prediction theo ngưỡng: xem output ô so sánh `0.20` / `0.35` 
 Chỉ dùng ảnh `sample_id = kitchen`. Chọn **một** record.
 
 1. Chép một record: `instance_id`= kitchen-006 ; `class_name`= bowl ; `score`= 0.528201 ; số điểm polygon=`polygon_point_count`=84 ; 3–5 điểm đầu của `polygon_xy`= [
-    [29.0,303.0],[28.0,304.0],[26.0,304.0],[25.0,305.0],[23.0,305.0],
+    [29.0,303.0],
+    [28.0,304.0],
+    [26.0,304.0],
+    [25.0,305.0],
+    [23.0,305.0]
 ]
 2. Polygon bám theo biên thật của object (cong/mép), còn box chỉ là hình chữ nhật bao ngoài nên mất chi tiết hình dạng.
-3. instance_id dùng để phân biệt từng object trong output lab (vd. hai bowl khác nhau là kitchen-001 và kitchen-002). Nó không phải mã lớp (class_id) và không phải ID theo dõi theo thời gian (tracking).
+3. `instance_id` dùng để phân biệt từng object trong output lab (vd. hai `bowl` khác nhau là `kitchen-001` và `kitchen-002`). Nó không phải mã lớp (`class_id`) và không phải ID theo dõi theo thời gian (tracking).
 4. Quy tắc biên mask: Mask phải đi sát biên nhìn thấy của instance; không tràn sang object bên cạnh; vùng bị che khuất thì chỉ vẽ phần còn nhìn thấy (trừ khi guideline nói khác).
-5. Chỗ hai đồ dùng chạm nhau trên bàn kitchen: nếu guideline chưa nói rõ tách biên thế nào thì escalation; nếu guideline đã bảo “tách theo khe nhìn thấy giữa hai object” thì làm theo guideline.
+5. Chỗ hai đồ dùng chạm nhau trên bàn `kitchen`: nếu guideline chưa nói rõ tách biên thế nào thì escalation; nếu guideline đã bảo “tách theo khe nhìn thấy giữa hai object” thì làm theo guideline.
 
 ## 4. Vòng đời và kiểm tra chất lượng
 
@@ -75,29 +79,29 @@ Lab hôm nay chỉ **xem prediction**. Chuỗi dưới đây là vòng đời pr
 
 | Tác vụ | Ground truth trông như thế nào? (đơn vị nhãn) | Lỗi hoặc chỗ khó quyết định bạn thấy trên ảnh/JSON | Annotator làm gì? | Reviewer xem gì? |
 | --- | --- | --- | --- | --- |
-| Phân loại ảnh | Một lớp cho cả ảnh theo taxonomy ImageNet-1K | Top-1 có thể không khớp trực giác cảnh giao thông (prediction ≠ GT) | Đọc guideline chọn đúng 1 lớp cho ảnh | Đúng taxonomy, đúng phạm vi cấp ảnh, không chép score thành nhãn |
-| Phát hiện vật thể |Mỗi object: class + box xyxy|Hạ threshold ra thêm hộp nhiễu; object cắt mép  |Vẽ box theo rule, đủ object trong guideline  | Box có ôm sát không, thiếu/thừa object, ca che khuất |
-| Instance segmentation |Box có ôm sát không, thiếu/thừa object, ca che khuất  |Biên hai vật chạm nhau / vùng mờ  | Vẽ mask bám biên từng instance | Mask có tràn object khác không, đủ instance cùng lớp | 
+| Phân loại ảnh | Mỗi ảnh được gán duy nhất một nhãn đại diện cho nội dung chính, thuộc hệ thống phân cấp ImageNet-1K. | Mô hình có thể dự đoán Top-1 chưa sát với nội dung thực tế. Một số cảnh có nhiều đối tượng khiến việc xác định lớp đại diện dễ nhầm lẫn. | Quan sát toàn bộ ảnh, đối chiếu định nghĩa trong guideline và chọn một nhãn phù hợp nhất, không tự suy diễn theo điểm số của mô hình | Đúng taxonomy, đúng phạm vi cấp ảnh, không chép score thành nhãn |
+| Phát hiện vật thể |Mỗi đối tượng cần được gán một nhãn class và một bounding box theo tọa độ xyxy.|Hạ threshold ra thêm hộp nhiễu; object cắt mép  |Vẽ box theo rule, đủ object trong guideline  | Box có ôm sát không, thiếu/thừa object, ca che khuất |
+| Instance segmentation |Mỗi instance có class và mask riêng theo từng pixel.  |Biên hai vật chạm nhau / vùng mờ  | Vẽ mask bám biên từng instance | Mask có tràn object khác không, đủ instance cùng lớp | 
 
 ## 5. An toàn dữ liệu
 
 1. Quy tắc bảo vệ dữ liệu của bạn cho bài lab này là gì? (viết 1 câu)
 Chỉ dùng ảnh COCO công khai có sẵn trong notebook; không tải ảnh cá nhân, khuôn mặt, biển số hay dữ liệu nội bộ lên Colab/GitHub.
 2. Nếu gặp ảnh hoặc dữ liệu không đúng phạm vi, bạn sẽ dừng và báo cho ai?
-Dừng thao tác và báo Lab Coach / GV phụ trách lab.
+Dừng ngay quá trình xử lý, không tự ý chỉnh sửa hay phát tán dữ liệu và báo cho Lab Coach hoặc giảng viên phụ trách để được xác minh, hướng dẫn xử lý.
 
 ## 6. Checklist trước khi nộp link repo
 
 Kiểm tra trên GitHub trong thư mục `report/`:
 
 - [x] `REPORT.md` (file này đã điền)
-- [ ] `day1_lab_outputs/classification_predictions.json`
-- [ ] `day1_lab_outputs/detection_predictions.json`
-- [ ] `day1_lab_outputs/segmentation_predictions.json`
-- [ ] `day1_lab_outputs/IMAGE_ATTRIBUTION.md`
-- [ ] `day1_lab_outputs/visuals/classification_top5.png`
-- [ ] `day1_lab_outputs/visuals/detection_predictions.png`
-- [ ] `day1_lab_outputs/visuals/segmentation_prediction.png`
-- [ ] Ô validation cuối notebook báo `PASS`
+- [x] `day1_lab_outputs/classification_predictions.json`
+- [x] `day1_lab_outputs/detection_predictions.json`
+- [x] `day1_lab_outputs/segmentation_predictions.json`
+- [x] `day1_lab_outputs/IMAGE_ATTRIBUTION.md`
+- [x] `day1_lab_outputs/visuals/classification_top5.png`
+- [x] `day1_lab_outputs/visuals/detection_predictions.png`
+- [x] `day1_lab_outputs/visuals/segmentation_prediction.png`
+- [x] Ô validation cuối notebook báo `PASS`
 - [x] Không có họ tên, MSSV hoặc dữ liệu nhạy cảm trong báo cáo/output
-- [ ] Đã nộp **link repository** trên LMS
+- [x] Đã nộp **link repository** trên LMS

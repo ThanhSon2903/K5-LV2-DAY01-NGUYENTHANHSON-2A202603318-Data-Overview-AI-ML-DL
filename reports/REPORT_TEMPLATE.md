@@ -1,8 +1,8 @@
 # Báo cáo bài thực hành Ngày 1 – Đọc prediction YOLO11 để hiểu định dạng nhãn
 
-**Ngày chạy:**
+**Ngày chạy: **6/11/2026
 
-**Runtime Colab:** CPU/GPU
+**Runtime Colab:** T4 GPU
 
 **Python / PyTorch / Ultralytics:**
 
