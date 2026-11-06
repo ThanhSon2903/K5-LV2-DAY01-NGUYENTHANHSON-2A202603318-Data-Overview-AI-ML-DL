@@ -4,7 +4,7 @@
 
 **Runtime Colab:** GPU
 
-**Python / PyTorch / Ultralytics:**3.13.6 / 2.11.0+cu130 / 8.4.145
+**Python / PyTorch / Ultralytics:** 3.13.6 / 2.11.0+cu130 / 8.4.145
 
 **Checkpoint:** `yolo11n-cls.pt`, `yolo11n.pt`, `yolo11n-seg.pt`
 
